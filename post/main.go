@@ -20,13 +20,14 @@ import (
 var conf Config
 
 type Config struct {
-	Port   string `yaml:"port"`
-	Key    string `yaml:"mailgun_key"`
-	PubKey string `yaml:"mailgun_pub_key"`
-	Domain string `yaml:"mailgun_domain"`
-	Sender string `yaml:"mailgun_sender"`
-	TypeDB string `yaml:"type_db"`
-	DBConn string `yaml:"db_connect"`
+	Domain  string `yaml:"domain"`
+	Port    string `yaml:"port"`
+	PubKey  string `yaml:"pub_key"`
+	CertPEM string `yaml:"cert_pem"`
+	CertCSR string `yaml:"cert_csr"`
+	CertCRT string `yaml:"cert_crt"`
+	TypeDB  string `yaml:"type_db"`
+	DBConn  string `yaml:"db_connect"`
 }
 
 type Post struct {

@@ -25,8 +25,9 @@ update:
 	@echo $(DEPS) | xargs -n1 go get -d -u
 
 proto:
-	@ if ! which protoc > /dev/null; then \
-		echo "$(ERROR_COLOR)error: protoc not installed$(OK_COLOR)" >&2; \
+	@echo "$(OK_COLOR)==> Generating protocol buffers$(NO_COLOR)"
+	@if ! which protoc > /dev/null; then \
+		echo "$(WARN_COLOR)error: protoc not installed$(OK_COLOR)" >&2; \
 		exit 1; \
 	fi
 	go get -u -v github.com/golang/protobuf/protoc-gen-go
@@ -48,9 +49,6 @@ clean:
 	go clean -i -r -x
 	rm ./ok && rm ./postd
 
-migrate:
-	#./postd --config postd.yaml migrate
-
 install:
 	@echo "$(OK_COLOR)==> Installing$(NO_COLOR)"
 	go install ./postd
@@ -63,8 +61,5 @@ lint:
 vet:
 	go vet ./client/
 	go vet ./post/
-
-test:
-	#./amityd --config amityd.conf start & pid=$$!; cd tests && go test; kill $$pid
 
 all: format lint test

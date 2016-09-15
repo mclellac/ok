@@ -8,7 +8,7 @@
 /test*
 
 # configuration files
-/postd.yaml
+*.yaml
 
 # Folders
 _obj

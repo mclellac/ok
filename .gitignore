@@ -5,6 +5,7 @@
 *.db
 /postd
 /ok
+/test*
 
 # configuration files
 /postd.yaml

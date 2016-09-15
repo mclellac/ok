@@ -2,6 +2,12 @@
 *.o
 *.a
 *.so
+*.db
+./postd
+./ok
+
+# configuration files
+./postd.yaml
 
 # Folders
 _obj

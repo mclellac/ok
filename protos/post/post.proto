@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package proto;
+
+service PostService {
+  rpc ListPost(RequestType) returns (stream Post) {};
+  rpc AddPost(Post) returns (ResponseType) {}
+}
+
+message ResponseType {
+}
+
+message RequestType {
+}
+
+message Post {
+    int64  id         = 1;
+    int32  created    = 2;
+    string title      = 3;
+    string article    = 4;
+}

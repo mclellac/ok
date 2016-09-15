@@ -36,10 +36,10 @@ type Config struct {
 }
 
 type Post struct {
-    ID      int64     `gorm:"primary_key"`
-    Created time.Time `gorm:"size:25"`
-    Title   string    `gorm:"type:varchar(100)"`
-    Article string    `gorm:"type:varchar(5000)"`
+    ID      int64  `gorm:"primary_key"`
+    Created int32  `gorm:"size:25"`
+    Title   string `gorm:"type:varchar(100)"`
+    Article string `gorm:"type:varchar(5000)"`
 }
 
 type postService struct {
@@ -54,19 +54,21 @@ func (ps *postService) AddPost(c context.Context, p *pb.Post) (*pb.ResponseType,
     ps.post = append(ps.post, p)
 
     p.Created = int32(time.Now().Unix())
-
-    fmt.Printf("ps.post = %+v\n", ps.post)
-    fmt.Printf("p = %+v\n", p)
-    fmt.Printf("&Post{} = %+v\n", &Post{})
-
     ps.DB.Save(&p)
+
     return new(pb.ResponseType), nil
 }
 
 func (ps *postService) ListPost(p *pb.RequestType, stream pb.PostService_ListPostServer) error {
+    var post []*pb.Post
+
     ps.m.Lock()
     defer ps.m.Unlock()
-    for _, r := range ps.post {
+
+    ps.DB.Order("created desc").Find(&post)
+    fmt.Printf("post = %+v", &post)
+
+    for _, r := range post {
         if err := stream.Send(r); err != nil {
             return err
         }
@@ -101,7 +103,7 @@ func main() {
     connectionString := conf.DBUsername + ":" +
         conf.DBPassword + "@tcp(" +
         conf.DBHostname + ":3306)/" +
-        conf.DBName + "?charset=utf8&parseTime=True"
+        conf.DBName + "?charset=utf8&parseTime=True&loc=Local"
 
     db, err := gorm.Open(conf.TypeDB, connectionString)
     if err != nil {

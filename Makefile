@@ -38,12 +38,12 @@ proto:
 
 format:
 	@echo "$(OK_COLOR)==> Formatting$(NO_COLOR)"
-	$(GOFMT) $(PACKAGES)
+	$(foreach ENTRY,$(PACKAGES),$(GOFMT) $(GOPATH)/src/$(ENTRY);)
 
 build:
 	@echo "$(OK_COLOR)==> Building$(NO_COLOR)"
 	$(GOBUILD) -o ./ok ./client
-	$(GOBUILD) -o ./postd ./post
+	$(GOBUILD) -o ./postd ./servers/post
 
 clean:
 	go clean -i -r -x
@@ -60,6 +60,6 @@ lint:
 
 vet:
 	go vet ./client/
-	go vet ./post/
+	go vet ./servers/post/
 
 all: format lint test

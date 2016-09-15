@@ -10,7 +10,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
-	pb "github.com/mclellac/fu/protos/post"
+	pb "github.com/mclellac/ok/protos/post"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"

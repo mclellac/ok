@@ -4,7 +4,7 @@ import (
 	"io"
 
 	"github.com/mattn/sc"
-	pb "github.com/mclellac/fu/protos/post"
+	pb "github.com/mclellac/ok/protos/post"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"

@@ -3,11 +3,11 @@
 *.a
 *.so
 *.db
-./postd
-./ok
+/postd
+/ok
 
 # configuration files
-./postd.yaml
+/postd.yaml
 
 # Folders
 _obj

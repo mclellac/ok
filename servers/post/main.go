@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	ui "github.com/mclellac/amity/lib/ui"
 	pb "github.com/mclellac/ok/protos/post"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -48,18 +49,20 @@ type postService struct {
 	DB   *gorm.DB
 }
 
-func (ps *postService) AddPost(c context.Context, p *pb.Post) (*pb.ResponseType, error) {
+func (ps *postService) Add(c context.Context, req *pb.Post) (*pb.Response, error) {
 	ps.m.Lock()
 	defer ps.m.Unlock()
-	ps.post = append(ps.post, p)
+	ps.post = append(ps.post, req)
 
-	p.Created = int32(time.Now().Unix())
-	ps.DB.Save(&p)
+	fmt.Printf("%sREQ >>%s %+v%s\n\n", ui.Cyan, ui.LightGreen, req, ui.Reset)
 
-	return new(pb.ResponseType), nil
+	req.Created = int32(time.Now().Unix())
+	ps.DB.Save(&req)
+
+	return new(pb.Response), nil
 }
 
-func (ps *postService) ListPost(p *pb.RequestType, stream pb.PostService_ListPostServer) error {
+func (ps *postService) List(req *pb.Request, stream pb.Service_ListServer) error {
 	var post []*pb.Post
 
 	ps.m.Lock()
@@ -114,12 +117,11 @@ func main() {
 	// Disable table name's pluralization
 	db.SingularTable(true)
 	// Enable Logger
-	db.LogMode(true)
-	db.SetLogger(log.New(os.Stdout, "\r\n", 0))
-
-	db.AutoMigrate(&Post{})
+	//db.LogMode(true)
+	//db.SetLogger(log.New(os.Stdout, "\r\n", 0))
 
 	if !db.HasTable("posts") {
+		//db.AutoMigrate(&Post{})
 		db.CreateTable(&Post{})
 	}
 
@@ -129,7 +131,7 @@ func main() {
 	}
 	s := grpc.NewServer()
 
-	pb.RegisterPostServiceServer(s, &postService{DB: db})
+	pb.RegisterServiceServer(s, &postService{DB: db})
 	fmt.Println("Server started on port", conf.Port)
 	s.Serve(lis)
 }

@@ -19,17 +19,17 @@ const (
 
 //const address = "127.0.0.1:11111"
 
-func add(client pb.PostServiceClient, title string, article string) error {
+func add(client pb.ServiceClient, title string, article string) error {
 	post := &pb.Post{
 		Title:   title,
 		Article: article,
 	}
-	_, err := client.AddPost(context.Background(), post)
+	_, err := client.Add(context.Background(), post)
 	return err
 }
 
-func list(client pb.PostServiceClient) error {
-	stream, err := client.ListPost(context.Background(), new(pb.RequestType))
+func list(client pb.ServiceClient) error {
+	stream, err := client.List(context.Background(), new(pb.Request))
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func main() {
 		grpclog.Fatalf("failed to dial: %v", err)
 	}
 	defer conn.Close()
-	client := pb.NewPostServiceClient(conn)
+	client := pb.NewServiceClient(conn)
 
 	(&sc.Cmds{
 		{

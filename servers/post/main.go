@@ -125,11 +125,17 @@ func main() {
 	}
 	defer db.Close()
 
+	dblog, err := os.OpenFile("postdb.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("Error opening file: %v", err)
+	}
+	defer dblog.Close()
+
 	// Disable table name's pluralization
 	db.SingularTable(true)
 	// Enable Logger
-	//db.LogMode(true)
-	//db.SetLogger(log.New(os.Stdout, "\r\n", 0))
+	db.LogMode(true)
+	db.SetLogger(log.New(dblog, "\r\n", 0))
 
 	if !db.HasTable("posts") {
 		//db.AutoMigrate(&Post{})

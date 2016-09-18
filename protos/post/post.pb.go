@@ -9,8 +9,8 @@ It is generated from these files:
 	post.proto
 
 It has these top-level messages:
-	ResponseType
-	RequestType
+	Response
+	Request
 	Post
 */
 package proto
@@ -35,21 +35,21 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto1.ProtoPackageIsVersion2 // please upgrade the proto package
 
-type ResponseType struct {
+type Response struct {
 }
 
-func (m *ResponseType) Reset()                    { *m = ResponseType{} }
-func (m *ResponseType) String() string            { return proto1.CompactTextString(m) }
-func (*ResponseType) ProtoMessage()               {}
-func (*ResponseType) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+func (m *Response) Reset()                    { *m = Response{} }
+func (m *Response) String() string            { return proto1.CompactTextString(m) }
+func (*Response) ProtoMessage()               {}
+func (*Response) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
-type RequestType struct {
+type Request struct {
 }
 
-func (m *RequestType) Reset()                    { *m = RequestType{} }
-func (m *RequestType) String() string            { return proto1.CompactTextString(m) }
-func (*RequestType) ProtoMessage()               {}
-func (*RequestType) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+func (m *Request) Reset()                    { *m = Request{} }
+func (m *Request) String() string            { return proto1.CompactTextString(m) }
+func (*Request) ProtoMessage()               {}
+func (*Request) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
 type Post struct {
 	Id      int64  `protobuf:"varint,1,opt,name=id" json:"id,omitempty"`
@@ -64,8 +64,8 @@ func (*Post) ProtoMessage()               {}
 func (*Post) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
 
 func init() {
-	proto1.RegisterType((*ResponseType)(nil), "proto.ResponseType")
-	proto1.RegisterType((*RequestType)(nil), "proto.RequestType")
+	proto1.RegisterType((*Response)(nil), "proto.Response")
+	proto1.RegisterType((*Request)(nil), "proto.Request")
 	proto1.RegisterType((*Post)(nil), "proto.Post")
 }
 
@@ -77,27 +77,28 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion3
 
-// Client API for PostService service
+// Client API for Service service
 
-type PostServiceClient interface {
-	ListPost(ctx context.Context, in *RequestType, opts ...grpc.CallOption) (PostService_ListPostClient, error)
-	AddPost(ctx context.Context, in *Post, opts ...grpc.CallOption) (*ResponseType, error)
+type ServiceClient interface {
+	List(ctx context.Context, in *Request, opts ...grpc.CallOption) (Service_ListClient, error)
+	Add(ctx context.Context, in *Post, opts ...grpc.CallOption) (*Response, error)
+	Delete(ctx context.Context, in *Post, opts ...grpc.CallOption) (*Response, error)
 }
 
-type postServiceClient struct {
+type serviceClient struct {
 	cc *grpc.ClientConn
 }
 
-func NewPostServiceClient(cc *grpc.ClientConn) PostServiceClient {
-	return &postServiceClient{cc}
+func NewServiceClient(cc *grpc.ClientConn) ServiceClient {
+	return &serviceClient{cc}
 }
 
-func (c *postServiceClient) ListPost(ctx context.Context, in *RequestType, opts ...grpc.CallOption) (PostService_ListPostClient, error) {
-	stream, err := grpc.NewClientStream(ctx, &_PostService_serviceDesc.Streams[0], c.cc, "/proto.PostService/ListPost", opts...)
+func (c *serviceClient) List(ctx context.Context, in *Request, opts ...grpc.CallOption) (Service_ListClient, error) {
+	stream, err := grpc.NewClientStream(ctx, &_Service_serviceDesc.Streams[0], c.cc, "/proto.Service/List", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &postServiceListPostClient{stream}
+	x := &serviceListClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -107,16 +108,16 @@ func (c *postServiceClient) ListPost(ctx context.Context, in *RequestType, opts 
 	return x, nil
 }
 
-type PostService_ListPostClient interface {
+type Service_ListClient interface {
 	Recv() (*Post, error)
 	grpc.ClientStream
 }
 
-type postServiceListPostClient struct {
+type serviceListClient struct {
 	grpc.ClientStream
 }
 
-func (x *postServiceListPostClient) Recv() (*Post, error) {
+func (x *serviceListClient) Recv() (*Post, error) {
 	m := new(Post)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -124,78 +125,110 @@ func (x *postServiceListPostClient) Recv() (*Post, error) {
 	return m, nil
 }
 
-func (c *postServiceClient) AddPost(ctx context.Context, in *Post, opts ...grpc.CallOption) (*ResponseType, error) {
-	out := new(ResponseType)
-	err := grpc.Invoke(ctx, "/proto.PostService/AddPost", in, out, c.cc, opts...)
+func (c *serviceClient) Add(ctx context.Context, in *Post, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := grpc.Invoke(ctx, "/proto.Service/Add", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// Server API for PostService service
-
-type PostServiceServer interface {
-	ListPost(*RequestType, PostService_ListPostServer) error
-	AddPost(context.Context, *Post) (*ResponseType, error)
+func (c *serviceClient) Delete(ctx context.Context, in *Post, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := grpc.Invoke(ctx, "/proto.Service/Delete", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
-func RegisterPostServiceServer(s *grpc.Server, srv PostServiceServer) {
-	s.RegisterService(&_PostService_serviceDesc, srv)
+// Server API for Service service
+
+type ServiceServer interface {
+	List(*Request, Service_ListServer) error
+	Add(context.Context, *Post) (*Response, error)
+	Delete(context.Context, *Post) (*Response, error)
 }
 
-func _PostService_ListPost_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(RequestType)
+func RegisterServiceServer(s *grpc.Server, srv ServiceServer) {
+	s.RegisterService(&_Service_serviceDesc, srv)
+}
+
+func _Service_List_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(Request)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(PostServiceServer).ListPost(m, &postServiceListPostServer{stream})
+	return srv.(ServiceServer).List(m, &serviceListServer{stream})
 }
 
-type PostService_ListPostServer interface {
+type Service_ListServer interface {
 	Send(*Post) error
 	grpc.ServerStream
 }
 
-type postServiceListPostServer struct {
+type serviceListServer struct {
 	grpc.ServerStream
 }
 
-func (x *postServiceListPostServer) Send(m *Post) error {
+func (x *serviceListServer) Send(m *Post) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _PostService_AddPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Service_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Post)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PostServiceServer).AddPost(ctx, in)
+		return srv.(ServiceServer).Add(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.PostService/AddPost",
+		FullMethod: "/proto.Service/Add",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostServiceServer).AddPost(ctx, req.(*Post))
+		return srv.(ServiceServer).Add(ctx, req.(*Post))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _PostService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "proto.PostService",
-	HandlerType: (*PostServiceServer)(nil),
+func _Service_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Post)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServiceServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.Service/Delete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServiceServer).Delete(ctx, req.(*Post))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _Service_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "proto.Service",
+	HandlerType: (*ServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "AddPost",
-			Handler:    _PostService_AddPost_Handler,
+			MethodName: "Add",
+			Handler:    _Service_Add_Handler,
+		},
+		{
+			MethodName: "Delete",
+			Handler:    _Service_Delete_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "ListPost",
-			Handler:       _PostService_ListPost_Handler,
+			StreamName:    "List",
+			Handler:       _Service_List_Handler,
 			ServerStreams: true,
 		},
 	},
@@ -205,18 +238,18 @@ var _PostService_serviceDesc = grpc.ServiceDesc{
 func init() { proto1.RegisterFile("post.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 204 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x4c, 0x8f, 0x3f, 0x6f, 0x83, 0x30,
-	0x10, 0xc5, 0x31, 0x7f, 0x4a, 0x7b, 0xb4, 0x0c, 0x6e, 0x07, 0x8b, 0x09, 0x31, 0xb1, 0x94, 0x56,
-	0xed, 0x27, 0xe8, 0xde, 0xa1, 0x72, 0xf3, 0x01, 0x42, 0xf0, 0x0d, 0x96, 0x48, 0xec, 0xd8, 0x97,
-	0x48, 0xf9, 0xf6, 0x11, 0x26, 0x44, 0x4c, 0xa7, 0xdf, 0xbb, 0x77, 0x7a, 0xef, 0x00, 0xac, 0xf1,
-	0xd4, 0x59, 0x67, 0xc8, 0xf0, 0x2c, 0x8c, 0xa6, 0x84, 0x67, 0x89, 0xde, 0x9a, 0x83, 0xc7, 0xcd,
-	0xc5, 0x62, 0xf3, 0x02, 0x85, 0xc4, 0xe3, 0x09, 0x3d, 0x05, 0xdc, 0x42, 0xfa, 0x67, 0x3c, 0xf1,
-	0x12, 0x62, 0xad, 0x04, 0xab, 0x59, 0x9b, 0xc8, 0x58, 0x2b, 0x2e, 0x20, 0x1f, 0x1c, 0xf6, 0x84,
-	0x4a, 0xc4, 0x35, 0x6b, 0x33, 0xb9, 0x20, 0x7f, 0x83, 0x8c, 0x34, 0x8d, 0x28, 0x92, 0x9a, 0xb5,
-	0x4f, 0x72, 0x86, 0xc9, 0xdf, 0x3b, 0xd2, 0xc3, 0x88, 0x22, 0x0d, 0xfa, 0x82, 0x5f, 0x7b, 0x28,
-	0xa6, 0x84, 0x7f, 0x74, 0x67, 0x3d, 0x20, 0xff, 0x80, 0xc7, 0x5f, 0xed, 0x29, 0x84, 0xf2, 0xb9,
-	0x6a, 0xb7, 0x2a, 0x54, 0x15, 0x37, 0x6d, 0x32, 0x34, 0xd1, 0x27, 0xe3, 0xef, 0x90, 0xff, 0x28,
-	0x15, 0xfc, 0xeb, 0x5d, 0xf5, 0x7a, 0x3f, 0x5e, 0x7d, 0x17, 0xed, 0x1e, 0x82, 0xfa, 0x7d, 0x0d,
-	0x00, 0x00, 0xff, 0xff, 0x3a, 0x2a, 0x1e, 0x86, 0x0b, 0x01, 0x00, 0x00,
+	// 205 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x84, 0x8f, 0xcd, 0x4a, 0xc4, 0x30,
+	0x10, 0xc7, 0x9b, 0x7e, 0xda, 0x11, 0x14, 0x06, 0x0f, 0xa1, 0xa7, 0x12, 0x10, 0x73, 0x2a, 0xa2,
+	0x4f, 0x20, 0x78, 0xf4, 0x20, 0xf1, 0x05, 0xac, 0xcd, 0x1c, 0x02, 0xc5, 0xd4, 0x64, 0xdc, 0x17,
+	0xd8, 0x17, 0x5f, 0xfa, 0xb5, 0xec, 0x6d, 0x4f, 0xc3, 0xef, 0xcf, 0x7f, 0x98, 0xdf, 0x00, 0x4c,
+	0x3e, 0x72, 0x37, 0x05, 0xcf, 0x1e, 0x8b, 0x65, 0x28, 0x80, 0x1b, 0x43, 0x71, 0xf2, 0xbf, 0x91,
+	0x54, 0x0d, 0x95, 0xa1, 0xbf, 0x7f, 0x8a, 0xac, 0xbe, 0x21, 0xff, 0xf4, 0x91, 0xf1, 0x0e, 0x52,
+	0x67, 0xa5, 0x68, 0x85, 0xce, 0x4c, 0xea, 0x2c, 0x4a, 0xa8, 0x86, 0x40, 0x3d, 0x93, 0x95, 0x69,
+	0x2b, 0x74, 0x61, 0x76, 0xc4, 0x07, 0x28, 0xd8, 0xf1, 0x48, 0x32, 0x6b, 0x85, 0xae, 0xcd, 0x0a,
+	0x73, 0xbf, 0x0f, 0xec, 0x86, 0x91, 0x64, 0xbe, 0xe4, 0x3b, 0xbe, 0x1c, 0x05, 0x54, 0x5f, 0x14,
+	0x0e, 0x6e, 0x20, 0x7c, 0x82, 0xfc, 0xc3, 0xcd, 0xd7, 0x56, 0xb7, 0x6e, 0xb3, 0x68, 0x6e, 0x37,
+	0x9e, 0x55, 0x54, 0xf2, 0x2c, 0xf0, 0x11, 0xb2, 0x37, 0x6b, 0xf1, 0x32, 0x6f, 0xee, 0xcf, 0x4b,
+	0xdb, 0x1b, 0x09, 0x6a, 0x28, 0xdf, 0x69, 0x24, 0xa6, 0x6b, 0xcd, 0x9f, 0x72, 0x49, 0x5e, 0x4f,
+	0x01, 0x00, 0x00, 0xff, 0xff, 0x2b, 0xe2, 0x17, 0x6f, 0x1a, 0x01, 0x00, 0x00,
 }

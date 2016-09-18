@@ -1,12 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"io"
+	"log"
+	"os"
+	"strconv"
 
 	ui "github.com/mclellac/amity/lib/ui"
 	pb "github.com/mclellac/ok/protos/post"
 
-	"github.com/mattn/sc"
+	"github.com/urfave/cli"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
@@ -17,19 +21,26 @@ const (
 	defaultNum = 0
 )
 
-//const address = "127.0.0.1:11111"
-
-func add(client pb.PostServiceClient, title string, article string) error {
+func add(client pb.ServiceClient, title string, article string) error {
 	post := &pb.Post{
 		Title:   title,
 		Article: article,
 	}
-	_, err := client.AddPost(context.Background(), post)
+	_, err := client.Add(context.Background(), post)
 	return err
 }
 
-func list(client pb.PostServiceClient) error {
-	stream, err := client.ListPost(context.Background(), new(pb.RequestType))
+func delete(client pb.ServiceClient, id int64) error {
+	post := &pb.Post{
+		Id: id,
+	}
+
+	_, err := client.Delete(context.Background(), post)
+	return err
+}
+
+func list(client pb.ServiceClient) error {
+	stream, err := client.List(context.Background(), new(pb.Request))
 	if err != nil {
 		return err
 	}
@@ -52,32 +63,65 @@ func main() {
 		grpclog.Fatalf("failed to dial: %v", err)
 	}
 	defer conn.Close()
-	client := pb.NewPostServiceClient(conn)
+	client := pb.NewServiceClient(conn)
 
-	(&sc.Cmds{
+	app := cli.NewApp()
+	app.Name = "ok"
+	app.Usage = "The Overkill client."
+	app.Version = "0.0.1"
+
+	app.Flags = []cli.Flag{
+		cli.StringFlag{Name: "host", Value: "localhost:50051", Usage: "okd server host"},
+	}
+
+	app.Commands = []cli.Command{
 		{
-			Name: "ls",
-			Desc: "ls: list posts",
-			Run: func(c *sc.C, args []string) error {
-				return list(client)
-			},
-		},
-		{
-			Name: "add",
-			Desc: "add \"title\" \"article\": add post",
-			Run: func(c *sc.C, args []string) error {
-				if len(args) != 2 {
-					return sc.UsageError
+			Name:        "add",
+			Usage:       "Create a new post.",
+			Description: "Adds new article to the database.\n\nEXAMPLE:\n   $ ok add \"Test Title\" \"Test article body...\"",
+			ArgsUsage:   "[\"post title\"] [\"post body\"]",
+			Action: func(c *cli.Context) error {
+				if len(c.Args()) != 2 {
+					fmt.Println("y'might want to double check your command there, cowgirl.")
 				}
-				title := args[0]
-				article := args[1]
+
+				title := c.Args().Get(0)
+				article := c.Args().Get(1)
 				if err != nil {
 					return err
 				}
 				return add(client, title, article)
 			},
 		},
-	}).Run(&sc.C{
-		Desc: "The Overkill client",
-	})
+		{
+			Name:        "ls",
+			Usage:       "List all posts.",
+			Description: "Displays the IDs and titles of posts on the server.\n\nEXAMPLE:\n   $ ok ls",
+			Action: func(c *cli.Context) error {
+				return list(client)
+			},
+		},
+		{
+			Name:        "rm",
+			Usage:       "Delete a post.",
+			Description: "Remove the post with the supplied ID from the server.\n\nEXAMPLE:\n   $ ok rm 2",
+			ArgsUsage:   "[ID]",
+			Action: func(c *cli.Context) error {
+				idStr := c.Args().Get(0)
+
+				id, err := strconv.Atoi(idStr)
+				if err != nil {
+					log.Print(err)
+					return nil
+				}
+
+				return delete(client, int64(id))
+				fmt.Printf("%sDeleted:\n%s%+v%s\n", ui.Red, ui.Grey, id, ui.Reset)
+
+				return nil
+			},
+		},
+	}
+
+	app.Run(os.Args)
 }

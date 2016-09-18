@@ -13,7 +13,6 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"gopkg.in/yaml.v2"
@@ -47,6 +46,18 @@ type postService struct {
 	post []*pb.Post
 	m    sync.Mutex
 	DB   *gorm.DB
+}
+
+func (ps *postService) Delete(c context.Context, req *pb.Post) (*pb.Response, error) {
+	ps.m.Lock()
+	defer ps.m.Unlock()
+
+	if ps.DB.First(req).RecordNotFound() {
+		fmt.Println("unable to find the requested post.")
+	} else {
+		ps.DB.Delete(req)
+	}
+	return new(pb.Response), nil
 }
 
 func (ps *postService) Add(c context.Context, req *pb.Post) (*pb.Response, error) {

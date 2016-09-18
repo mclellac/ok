@@ -5,16 +5,15 @@ package proto;
 service Service {
   rpc List(Request) returns (stream Post) {};
   rpc Add(Post) returns (Response) {}
+  rpc Delete(Post) returns (Response) {}
 }
 
-message Response {
-}
+message Response {}
 
-message Request {
-}
+message Request {}
 
 message Post {
-    uint64  id         = 1;
+    int64  id         = 1;
     int32  created    = 2;
     string title      = 3;
     string article    = 4;

@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	ui "github.com/mclellac/amity/lib/ui"
+	//ui "github.com/mclellac/amity/lib/ui"
 	pb "github.com/mclellac/ok/protos/post"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -21,18 +21,20 @@ import (
 var conf Config
 
 type Config struct {
-	Domain     string `yaml:"domain"`
-	Port       string `yaml:"port"`
-	PubKey     string `yaml:"pub_key"`
-	CertPEM    string `yaml:"cert_pem"`
-	CertCSR    string `yaml:"cert_csr"`
-	CertCRT    string `yaml:"cert_crt"`
-	TypeDB     string `yaml:"type_db"`
-	DBConn     string `yaml:"db_connect"`
-	DBUsername string `yaml:"db_username"`
-	DBPassword string `yaml:"db_password"`
-	DBHostname string `yaml:"db_hostname"`
-	DBName     string `yaml:"db_name"`
+	Domain        string `yaml:"domain"`
+	Port          string `yaml:"port"`
+	ServerLogfile string `yaml:"server_logfile"`
+	PubKey        string `yaml:"pub_key"`
+	CertPEM       string `yaml:"cert_pem"`
+	CertCSR       string `yaml:"cert_csr"`
+	CertCRT       string `yaml:"cert_crt"`
+	TypeDB        string `yaml:"type_db"`
+	DBConn        string `yaml:"db_connect"`
+	DBUsername    string `yaml:"db_username"`
+	DBPassword    string `yaml:"db_password"`
+	DBHostname    string `yaml:"db_hostname"`
+	DBName        string `yaml:"db_name"`
+	DBLogfile     string `yaml:"db_logfile"`
 }
 
 type Post struct {
@@ -54,18 +56,22 @@ func (ps *postService) Delete(c context.Context, req *pb.Post) (*pb.Response, er
 
 	if ps.DB.First(req).RecordNotFound() {
 		fmt.Println("unable to find the requested post.")
+		return &pb.Response{
+			Error: fmt.Sprintf("you sure there is a post with the ID %d, sport?", int64(req.Id)),
+		}, nil
 	} else {
 		ps.DB.Delete(req)
 	}
-	return new(pb.Response), nil
+
+	return &pb.Response{
+		Message: fmt.Sprintf("post with ID %d has been blasted into oblivion", int64(req.Id)),
+	}, nil
 }
 
 func (ps *postService) Add(c context.Context, req *pb.Post) (*pb.Response, error) {
 	ps.m.Lock()
 	defer ps.m.Unlock()
 	ps.post = append(ps.post, req)
-
-	fmt.Printf("%sREQ >>%s %+v%s\n\n", ui.Cyan, ui.LightGreen, req, ui.Reset)
 
 	req.Created = int32(time.Now().Unix())
 	ps.DB.Save(&req)
@@ -80,7 +86,6 @@ func (ps *postService) List(req *pb.Request, stream pb.Service_ListServer) error
 	defer ps.m.Unlock()
 
 	ps.DB.Order("created desc").Find(&post)
-	fmt.Printf("post = %+v", &post)
 
 	for _, r := range post {
 		if err := stream.Send(r); err != nil {
@@ -125,7 +130,7 @@ func main() {
 	}
 	defer db.Close()
 
-	dblog, err := os.OpenFile("postdb.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	dblog, err := os.OpenFile(conf.DBLogfile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("Error opening file: %v", err)
 	}

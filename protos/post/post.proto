@@ -3,18 +3,22 @@ syntax = "proto3";
 package proto;
 
 service Service {
-  rpc List(Request) returns (stream Post) {};
-  rpc Add(Post) returns (Response) {}
-  rpc Delete(Post) returns (Response) {}
+    rpc Add(Post) returns (Response) {}
+    rpc Delete(Post) returns (Response) {}
+    rpc List(Request) returns (stream Post) {};
 }
 
-message Response {}
+message Response {
+    string Message  = 1;
+    string Url      = 2;
+    string Error    = 3;
+}
 
 message Request {}
 
 message Post {
-    int64  id         = 1;
-    int32  created    = 2;
-    string title      = 3;
-    string article    = 4;
+    int64  id           = 1;
+    int32  created      = 2;
+    string title        = 3;
+    string article      = 4;
 }

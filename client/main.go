@@ -35,8 +35,13 @@ func delete(client pb.ServiceClient, id int64) error {
 		Id: id,
 	}
 
-	_, err := client.Delete(context.Background(), post)
-	return err
+	res, err := client.Delete(context.Background(), post)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(res)
+
+	return nil
 }
 
 func list(client pb.ServiceClient) error {
@@ -116,7 +121,7 @@ func main() {
 				}
 
 				return delete(client, int64(id))
-				fmt.Printf("%sDeleted:\n%s%+v%s\n", ui.Red, ui.Grey, id, ui.Reset)
+				//grpclog.Printf(resp)
 
 				return nil
 			},

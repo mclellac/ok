@@ -137,7 +137,7 @@ func main() {
 	db.LogMode(true)
 	db.SetLogger(log.New(dblog, "\r\n", 0))
 
-	if !db.HasTable("posts") {
+	if !db.HasTable("post") {
 		//db.AutoMigrate(&Post{})
 		db.CreateTable(&Post{})
 	}

@@ -14,7 +14,7 @@ PACKAGES = $(shell go list ./...)
 
 default: build
 
-deps:
+dep:
 	@echo "$(OK_COLOR)==> Installing dependencies$(NO_COLOR)"
 	@go get -d -v ./...
 	@echo $(DEPS) | xargs -n1 go get -d

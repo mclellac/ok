@@ -24,7 +24,7 @@ update:
 	@go get -d -u ./...
 	@echo $(DEPS) | xargs -n1 go get -d -u
 
-proto:
+protos:
 	@echo "$(OK_COLOR)==> Generating protocol buffers$(NO_COLOR)"
 	@if ! which protoc > /dev/null; then \
 		echo "$(WARN_COLOR)error: protoc not installed$(OK_COLOR)" >&2; \

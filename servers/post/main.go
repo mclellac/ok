@@ -57,14 +57,14 @@ func (ps *postService) Delete(c context.Context, req *pb.Post) (*pb.Response, er
 	if ps.DB.First(req).RecordNotFound() {
 		fmt.Println("unable to find the requested post.")
 		return &pb.Response{
-			Error: fmt.Sprintf("you sure there is a post with the ID %d, sport?", int64(req.Id)),
+			Error: fmt.Sprintf("Sorry, chummer. I can't find a post with the ID %d.", int64(req.Id)),
 		}, nil
 	} else {
 		ps.DB.Delete(req)
 	}
 
 	return &pb.Response{
-		Message: fmt.Sprintf("post with ID %d has been blasted into oblivion", int64(req.Id)),
+		Message: fmt.Sprintf("Post with ID %d has been violently destroyed.", int64(req.Id)),
 	}, nil
 }
 
@@ -76,7 +76,9 @@ func (ps *postService) Add(c context.Context, req *pb.Post) (*pb.Response, error
 	req.Created = int32(time.Now().Unix())
 	ps.DB.Save(&req)
 
-	return new(pb.Response), nil
+	return &pb.Response{
+		Message: fmt.Sprintf("Post with title '%s' submitted.", req.Title),
+	}, nil
 }
 
 func (ps *postService) List(req *pb.Request, stream pb.Service_ListServer) error {

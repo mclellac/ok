@@ -26,7 +26,9 @@ func add(client pb.ServiceClient, title string, article string) error {
 		Title:   title,
 		Article: article,
 	}
-	_, err := client.Add(context.Background(), post)
+	res, err := client.Add(context.Background(), post)
+	fmt.Println(res)
+
 	return err
 }
 

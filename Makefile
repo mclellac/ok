@@ -1,10 +1,10 @@
-NO_COLOR=$(shell echo  "\033[0m")
-OK_COLOR=$(shell echo  "\033[32;01m")
-ERROR_COLOR=$(shell echo  "\033[31;01m")
-WARN_COLOR=$(shell echo  "\033[33;01m")
+NO_COLOR := $(shell echo "\033[0m")
+OK_COLOR := $(shell echo "\033[32;01m")
+ERROR_COLOR := $(shell echo "\033[31;01m")
+WARN_COLOR := $(shell echo "\033[33;01m")
 GOFMT=gofmt -w
 DEPS=$(shell go list -f '{{range .TestImports}}{{.}} {{end}}' ./...)
-PACKAGES = $(shell go list ./...)
+PACKAGES := $(shell go list ./...)
 
 default: build
 

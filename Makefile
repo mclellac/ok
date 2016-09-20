@@ -25,8 +25,8 @@ proto:
 		exit 1; \
 	fi
 	go get -u -v github.com/golang/protobuf/protoc-gen-go
+	# use $$dir as the root for all proto files in the same directory
 	for dir in $$(git ls-files '*.proto' | xargs -n1 dirname | uniq); do \
-		# use $$dir as the root for all proto files in the same directory
 		protoc -I $$dir --go_out=plugins=grpc:$$dir $$dir/*.proto; \
 	done
 
@@ -36,7 +36,7 @@ format:
 
 build:
 	@echo "$(OK_COLOR)==> Building$(NO_COLOR)"
-	go build -o ./ok ./client
+	go build -o ./ok    ./client
 	go build -o ./postd ./servers/post
 
 clean:
@@ -50,7 +50,8 @@ install:
 
 lint:
 	@echo "$(OK_COLOR)==> Linting$(NO_COLOR)"
-	$(GOPATH)/bin/golint .
+	$(GOPATH)/bin/golint ./client
+	$(GOPATH)/bin/golint ./servers/post
 
 vet:
 	go vet ./client/

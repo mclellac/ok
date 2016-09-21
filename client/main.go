@@ -74,7 +74,7 @@ func main() {
 
 	app := cli.NewApp()
 	app.Name = "ok"
-	app.Usage = "The Overkill client."
+	app.Usage = "overkill client."
 	app.Version = "0.0.1"
 
 	app.Flags = []cli.Flag{
@@ -89,7 +89,7 @@ func main() {
 			ArgsUsage:   "[\"post title\"] [\"post body\"]",
 			Action: func(c *cli.Context) error {
 				if len(c.Args()) != 2 {
-					fmt.Println("y'might want to double check your command there, cowgirl.")
+					fmt.Println("You might want to double check your command there.")
 				}
 
 				title := c.Args().Get(0)
@@ -114,6 +114,11 @@ func main() {
 			Description: "Remove the post with the supplied ID from the server.\n\nEXAMPLE:\n   $ ok rm 2",
 			ArgsUsage:   "[ID]",
 			Action: func(c *cli.Context) error {
+				if len(c.Args()) < 2 {
+					fmt.Println("What is it that you are trying to delete... air?")
+					return nil
+				}
+
 				idStr := c.Args().Get(0)
 
 				id, err := strconv.Atoi(idStr)

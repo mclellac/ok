@@ -59,7 +59,7 @@ func list(client pb.ServiceClient) error {
 		if err != nil {
 			return err
 		}
-		grpclog.Printf("%+v %+v %+v", ui.Cyan, post, ui.Reset)
+		grpclog.Printf("%s %s %s", ui.Cyan, post, ui.Reset)
 	}
 	return nil
 }
@@ -114,7 +114,7 @@ func main() {
 			Description: "Remove the post with the supplied ID from the server.\n\nEXAMPLE:\n   $ ok rm 2",
 			ArgsUsage:   "[ID]",
 			Action: func(c *cli.Context) error {
-				if len(c.Args()) < 2 {
+				if len(c.Args()) < 1 {
 					fmt.Println("What is it that you are trying to delete... air?")
 					return nil
 				}
@@ -128,7 +128,6 @@ func main() {
 				}
 
 				return delete(client, int64(id))
-				//grpclog.Printf(resp)
 
 				return nil
 			},

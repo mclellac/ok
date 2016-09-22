@@ -57,14 +57,14 @@ func (ps *postService) Delete(c context.Context, req *pb.Post) (*pb.Response, er
 	if ps.DB.First(req).RecordNotFound() {
 		fmt.Println("unable to find the requested post.")
 		return &pb.Response{
-			Error: fmt.Sprintf("Sorry, chummer. I can't find a post with the ID %d.", int64(req.Id)),
+			Error: fmt.Sprintf("Sorry, chummer. I can't find a post with an ID of %d.", int64(req.Id)),
 		}, nil
 	} else {
 		ps.DB.Delete(req)
 	}
 
 	return &pb.Response{
-		Message: fmt.Sprintf("Post with ID %d has been violently destroyed.", int64(req.Id)),
+		Message: fmt.Sprintf("Post with ID %d has been, 'taken care of', ifyaknowwhatimean.", int64(req.Id)),
 	}, nil
 }
 

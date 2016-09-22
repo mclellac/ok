@@ -64,7 +64,7 @@ func (ps *postService) Delete(c context.Context, req *pb.Post) (*pb.Response, er
 	}
 
 	return &pb.Response{
-		Message: fmt.Sprintf("Post with ID %d has been, 'taken care of', ifyaknowwhatimean.", int64(req.Id)),
+		Message: fmt.Sprintf("Post with ID %d has been 'taken care of', ifyaknowwhatimean.", int64(req.Id)),
 	}, nil
 }
 

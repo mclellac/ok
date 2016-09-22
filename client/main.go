@@ -90,6 +90,7 @@ func main() {
 			Action: func(c *cli.Context) error {
 				if len(c.Args()) != 2 {
 					fmt.Println("You might want to double check your command there.")
+					return nil
 				}
 
 				title := c.Args().Get(0)

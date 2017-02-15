@@ -1,15 +1,25 @@
-NO_COLOR := $(shell echo "\033[0m")
-OK_COLOR := $(shell echo "\033[32;01m")
-ERROR_COLOR := $(shell echo "\033[31;01m")
-WARN_COLOR := $(shell echo "\033[33;01m")
+ifeq ($(UNAME_S),Linux)
+	NO_COLOR 	= $(shell echo -e "\033[0m")
+	OK_COLOR 	= $(shell echo -e "\033[32;01m")
+	ERROR_COLOR = $(shell echo -e "\033[31;01m")
+	WARN_COLOR 	= $(shell echo -e "\033[33;01m")
+endif
+ifeq ($(UNAME_S),Darwin)
+	NO_COLOR 	:= $(shell echo "\033[0m")
+	OK_COLOR 	:= $(shell echo "\033[32;01m")
+	ERROR_COLOR := $(shell echo "\033[31;01m")
+	WARN_COLOR 	:= $(shell echo "\033[33;01m")
+endif
+
 GOFMT=gofmt -w
 DEPS=$(shell go list -f '{{range .TestImports}}{{.}} {{end}}' ./...)
 PACKAGES := $(shell go list ./...)
 
+
 default: build
 
 dep:
-	@echo "$(OK_COLOR)==> Installing dependencies$(NO_COLOR)"
+	@printf "$(OK_COLOR)==> Installing dependencies$(NO_COLOR)"
 	@go get -d -v ./...
 	@echo $(DEPS) | xargs -n1 go get -d
 

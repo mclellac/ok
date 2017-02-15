@@ -1,3 +1,8 @@
+GOFMT=gofmt -w
+DEPS=$(shell go list -f '{{range .TestImports}}{{.}} {{end}}' ./...)
+PACKAGES := $(shell go list ./...)
+
+UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 	NO_COLOR 	= $(shell echo -e "\033[0m")
 	OK_COLOR 	= $(shell echo -e "\033[32;01m")
@@ -11,16 +16,11 @@ ifeq ($(UNAME_S),Darwin)
 	WARN_COLOR 	:= $(shell echo "\033[33;01m")
 endif
 
-GOFMT=gofmt -w
-DEPS=$(shell go list -f '{{range .TestImports}}{{.}} {{end}}' ./...)
-PACKAGES := $(shell go list ./...)
-
-
 default: build
 
 dep:
-	@printf "$(OK_COLOR)==> Installing dependencies$(NO_COLOR)"
-	@go get -d -v ./...
+	@echo "$(OK_COLOR)==> Installing dependencies$(NO_COLOR)"
+	@go get -u -d -v ./...
 	@echo $(DEPS) | xargs -n1 go get -d
 
 update:
@@ -31,7 +31,7 @@ update:
 proto:
 	@echo "$(OK_COLOR)==> Generating protocol buffers$(NO_COLOR)"
 	@if ! which protoc > /dev/null; then \
-		echo "$(WARN_COLOR)error: protoc not installed$(OK_COLOR)" >&2; \
+		echo "$(WARN_COLOR)Error: protoc not installed$(OK_COLOR)" >&2; \
 		exit 1; \
 	fi
 	go get -u -v github.com/golang/protobuf/protoc-gen-go
@@ -50,6 +50,7 @@ build:
 	go build -o ./postd ./servers/post
 
 clean:
+	@echo "$(OK_COLOR)==> Cleaning$(NO_COLOR)"
 	go clean -i -r -x
 	rm ./ok && rm ./postd
 

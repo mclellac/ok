@@ -12,10 +12,10 @@ import (
 	pb "github.com/mclellac/ok/protos/post"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-yaml/yaml"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"gopkg.in/yaml.v2"
 )
 
 var conf Config

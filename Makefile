@@ -4,16 +4,16 @@ PACKAGES := $(shell go list ./...)
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	NO_COLOR 	= $(shell echo -e "\033[0m")
-	OK_COLOR 	= $(shell echo -e "\033[32;01m")
-	ERROR_COLOR = $(shell echo -e "\033[31;01m")
-	WARN_COLOR 	= $(shell echo -e "\033[33;01m")
+	NO_COLOR	= $(shell echo -e "\033[0m")
+	OK_COLOR	= $(shell echo -e "\033[32;01m")
+	ERROR_COLOR	= $(shell echo -e "\033[31;01m")
+	WARN_COLOR	= $(shell echo -e "\033[33;01m")
 endif
 ifeq ($(UNAME_S),Darwin)
 	NO_COLOR 	:= $(shell echo "\033[0m")
 	OK_COLOR 	:= $(shell echo "\033[32;01m")
-	ERROR_COLOR := $(shell echo "\033[31;01m")
-	WARN_COLOR 	:= $(shell echo "\033[33;01m")
+	ERROR_COLOR	:= $(shell echo "\033[31;01m")
+	WARN_COLOR	:= $(shell echo "\033[33;01m")
 endif
 
 default: build
